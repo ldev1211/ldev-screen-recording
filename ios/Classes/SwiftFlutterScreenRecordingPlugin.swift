@@ -63,7 +63,6 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         do {
             try FileManager.default.removeItem(at: videoOutputURL!)
         } catch {}
-
         do {
             try videoWriter = AVAssetWriter(outputURL: videoOutputURL!, fileType: AVFileType.mp4)
         } catch let writerError as NSError {
@@ -141,6 +140,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                     self.videoWriter?.startWriting()
                                     self.videoWriter?.startSession(
                                         atSourceTime: CMSampleBufferGetPresentationTimeStamp(cmSampleBuffer))
+
                                 }
 
                                 if self.videoWriter?.status == AVAssetWriter.Status.writing {
@@ -151,6 +151,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                         }
                                     }
                                 }
+                                break
                             case RPSampleBufferType.audioMic:
                                 if self.recordAudio {
                                     if self.videoWriter?.status == AVAssetWriter.Status.writing{
@@ -161,6 +162,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                         }
                                     }
                                 }
+                                break
                             default:
                                 ();
                                 // print("not a video sample, so ignore")
@@ -187,30 +189,16 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 print("stopping recording")
             })
         } else {
-            //  Fallback on earlier versions
+//             Fallback on earlier versions
         }
 
         self.videoWriterInput?.markAsFinished()
         self.audioInput?.markAsFinished()
-
         self.videoWriter?.finishWriting {
             print("finished writing video")
-            //Now save the video
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.videoOutputURL! as URL)
-            }) { saved, error in
-                if saved {
-                    let documentsPath =
-                    NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-                    self.myResult!(String(documentsPath.appendingPathComponent(self.nameVideo)))
-                }
-                if error != nil {
-                    print("Video did not save for some reason", error.debugDescription)
-                    debugPrint(error?.localizedDescription ?? "error is nil")
-                }
-            }
+            let documentsPath =
+            NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+            self.myResult!(String(documentsPath.appendingPathComponent(self.nameVideo)))
         }
-
     }
-
 }
