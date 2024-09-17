@@ -1,6 +1,6 @@
 name: ldev_screen_recording
 description: A new Flutter plugin for record the screen. This plugin can be used for record the screen on android, iOS, and web devices.
-version: 0.0.6
+version: 0.1.0
 homepage: "https://www.facebook.com/ldevmobile/"
 
 environment:
